@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 import javax.sql.DataSource;
 
@@ -16,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
 import org.springframework.jdbc.datasource.embedded.DataSourceFactory;
 
-import com.mysql.management.MysqldResource;
-import com.mysql.management.MysqldResourceI;
 
 /**
  * Fires up a pseudo embedded MySQL instance and provides {@link DataSource} instances to access it
@@ -26,7 +21,6 @@ import com.mysql.management.MysqldResourceI;
  */
 public class EmbeddedMySQLDataSourceFactory implements DataSourceFactory {
 
-    private static final String PATH = "mysql-mxj";
     private static final int AND_MASK = 0xFFFF;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedMySQLDataSourceFactory.class);
     private static EmbeddedMySQLDataSource dataSource;
@@ -40,16 +34,9 @@ public class EmbeddedMySQLDataSourceFactory implements DataSourceFactory {
             throw new IllegalStateException("There is already an instance ... WTF?");
         }
         int port = pickRandomPort(10);
-        File dbServerPath = new File(System.getProperty("java.io.tmpdir"), PATH);
-        if (!dbServerPath.exists()) {
-            dbServerPath.mkdir();
-        }
+        File dbServerPath = new File(System.getProperty("java.io.tmpdir"), "mysqld-" + port);
         dbServerPath.deleteOnExit();
-        MysqldResource dbServer = new MysqldResource(dbServerPath);
-        Map<String, String> database_options = new HashMap<String, String>();
-        database_options.put(MysqldResourceI.PORT, Integer.toString(port));
-        database_options.put(MysqldResourceI.INITIALIZE_USER, "false");
-        dataSource = new EmbeddedMySQLDataSource(dbServer, database_options);
+        dataSource = new EmbeddedMySQLDataSource(port, dbServerPath.getAbsolutePath());
     }
 
     /**
