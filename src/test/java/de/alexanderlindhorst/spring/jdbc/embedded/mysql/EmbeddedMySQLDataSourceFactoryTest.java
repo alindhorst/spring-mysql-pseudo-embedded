@@ -1,6 +1,7 @@
 package de.alexanderlindhorst.spring.jdbc.embedded.mysql;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -40,10 +42,17 @@ public class EmbeddedMySQLDataSourceFactoryTest {
     /**
      * Test of getConnectionProperties method, of class EmbeddedMySQLDataSourceFactory.
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void checkGetConnectionPropertiesThrowsException() {
-        instance.getConnectionProperties();
-        fail("The test should have thrown an exception one step earlier");
+    @Test
+    public void checkGetConnectionPropertiesReturnsImmutableObject() throws ClassNotFoundException {
+        ConnectionProperties connectionProperties = instance.getConnectionProperties();
+        int hash = connectionProperties.hashCode();
+        connectionProperties.setPassword("couldabin");
+        connectionProperties.setDriverClass((Class<? extends Driver>) Class.forName(EmbeddedMySQLDataSource.DRIVER));
+        connectionProperties.setUrl("wouldabin");
+        connectionProperties.setUsername("shouldabin");
+        int newHash = connectionProperties.hashCode();
+
+        assertThat(newHash, is(hash));
     }
 
     /**

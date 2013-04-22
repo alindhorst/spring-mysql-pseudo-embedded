@@ -26,7 +26,7 @@ class EmbeddedMySQLDataSource implements DataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedMySQLDataSource.class);
     private static final String USER = "pseudo";
     private static final String PASSWORD = "embedded";
-    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    static final String DRIVER = "com.mysql.jdbc.Driver";
     private static final String URL_TEMPLATE = "jdbc:mysql:mxj://localhost:%d/embeddedmysql?server.basedir=%s"
             + "&createDatabaseIfNotExist=true"
             + "&server.initialize-user=true";

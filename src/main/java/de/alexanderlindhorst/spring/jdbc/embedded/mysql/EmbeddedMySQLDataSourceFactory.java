@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.sql.Driver;
 
 import javax.sql.DataSource;
 
@@ -12,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
 import org.springframework.jdbc.datasource.embedded.DataSourceFactory;
-
 
 /**
  * Fires up a pseudo embedded MySQL instance and provides {@link DataSource} instances to access it
@@ -75,7 +75,27 @@ public class EmbeddedMySQLDataSourceFactory implements DataSourceFactory {
 
     @Override
     public ConnectionProperties getConnectionProperties() {
-        throw new UnsupportedOperationException("Not supported, datasource is fully configured");
+        return new ConnectionProperties() {
+            @Override
+            public void setDriverClass(Class<? extends Driver> type) {
+                LOGGER.debug("setDriverClass to {} ignored", type);
+            }
+
+            @Override
+            public void setUrl(String string) {
+                LOGGER.debug("setUrl to {}  ignored", string);
+            }
+
+            @Override
+            public void setUsername(String string) {
+                LOGGER.debug("setUsername to {} call ignored", string);
+            }
+
+            @Override
+            public void setPassword(String string) {
+                LOGGER.debug("setPassword to {} ignored", string);
+            }
+        };
     }
 
     @Override
